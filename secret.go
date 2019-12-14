@@ -65,7 +65,7 @@ func (sf Secret) Decrypt(origData []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(origData)%block.BlockSize() != 0 {
+	if len(origData) == 0 || len(origData)%block.BlockSize() != 0 {
 		return nil, ErrInputNotFullBlocks
 	}
 	out := make([]byte, len(origData))
