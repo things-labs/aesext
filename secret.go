@@ -36,6 +36,9 @@ func pcksPadding(origData []byte, size int) []byte {
 // PKCS#5和PKCS#7 解填充
 func pcksUnPadding(origData []byte) ([]byte, error) {
 	length := len(origData)
+	if length == 0 {
+		return nil, ErrUnPaddingOutOfRange
+	}
 	unPadSize := int(origData[length-1])
 	if unPadSize > length {
 		return nil, ErrUnPaddingOutOfRange
