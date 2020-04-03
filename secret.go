@@ -47,31 +47,33 @@ func pcksUnPadding(origData []byte) ([]byte, error) {
 }
 
 // Encrypt 加密
-func (sf Secret) Encrypt(origData []byte) ([]byte, error) {
+func (sf Secret) Encrypt(text []byte) ([]byte, error) {
 	newKey, iv := md5.Sum(sf.key), md5.Sum(append(sf.salt, sf.key...))
 
 	block, err := aes.NewCipher(newKey[:])
 	if err != nil {
 		return nil, err
 	}
-	orig := pcksPadding(origData, block.BlockSize())
-	out := make([]byte, len(orig))
-	cipher.NewCBCEncrypter(block, iv[:]).CryptBlocks(out, orig)
-	return out, nil
+	msg := pcksPadding(text, block.BlockSize())
+	cipher.
+		NewCBCEncrypter(block, iv[:]).
+		CryptBlocks(msg, msg)
+	return msg, nil
 }
 
 // Decrypt 解密
-func (sf Secret) Decrypt(origData []byte) ([]byte, error) {
+func (sf Secret) Decrypt(text []byte) ([]byte, error) {
 	newKey, iv := md5.Sum(sf.key), md5.Sum(append(sf.salt, sf.key...))
 
 	block, err := aes.NewCipher(newKey[:])
 	if err != nil {
 		return nil, err
 	}
-	if len(origData) == 0 || len(origData)%block.BlockSize() != 0 {
+	if len(text) == 0 || len(text)%block.BlockSize() != 0 {
 		return nil, ErrInputNotFullBlocks
 	}
-	out := make([]byte, len(origData))
-	cipher.NewCBCDecrypter(block, iv[:]).CryptBlocks(out, origData)
-	return pcksUnPadding(out)
+	cipher.
+		NewCBCDecrypter(block, iv[:]).
+		CryptBlocks(text, text)
+	return pcksUnPadding(text)
 }
