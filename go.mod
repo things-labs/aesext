@@ -1,3 +1,3 @@
-module github.com/thinkgos/aesExt
+module github.com/thinkgos/aesext
 
-go 1.13
+go 1.14
