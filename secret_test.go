@@ -1,4 +1,4 @@
-package aesExt
+package aesext
 
 import (
 	"reflect"

@@ -1,6 +1,6 @@
-// Package aesExt imp AES-128 CBC PCKS7 Padding with your salt
+// Package aesext imp AES-128 CBC PCKS7 Padding with your salt
 // PKCS#5 padding is identical to PKCS#7 padding, PCKS5 use for 64bit padding
-package aesExt
+package aesext
 
 import (
 	"bytes"
