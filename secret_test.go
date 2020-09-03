@@ -34,7 +34,11 @@ func TestSecret_Encrypt(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			this := New(tt.fields.key, tt.fields.salt)
+			this, err := New(tt.fields.key, tt.fields.salt)
+			if err != nil {
+				t.Errorf("New() error = %v", err)
+				return
+			}
 			got, err := this.Encrypt(tt.args.origData)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Secret.Decrypt() error = %v, wantErr %v", err, tt.wantErr)
@@ -100,9 +104,10 @@ func TestSecret_Decrypt(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			this := &Secret{
-				key:  tt.fields.key,
-				salt: tt.fields.salt,
+			this, err := New(tt.fields.key, tt.fields.salt)
+			if err != nil {
+				t.Errorf("New() error = %v", err)
+				return
 			}
 			got, err := this.Decrypt(tt.args.orgiData)
 			if (err != nil) != tt.wantErr {
