@@ -86,7 +86,7 @@ func (sf *blockBlock) Decrypt(cipherText []byte) ([]byte, error) {
 	if len(cipherText) == 0 || len(cipherText)%blockSize != 0 {
 		return nil, ErrInputNotMultipleBlocks
 	}
-	cipher.NewCBCDecrypter(sf.block, sf.iv).CryptBlocks(cipherText, cipherText)
+	sf.newDecrypt(sf.block, sf.iv).CryptBlocks(cipherText, cipherText)
 	return PCKSUnPadding(cipherText)
 }
 
