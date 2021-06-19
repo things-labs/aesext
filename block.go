@@ -30,6 +30,7 @@ type BlockCrypt interface {
 // Option option
 type Option func(bs *blockBlock)
 
+// WithBlockCodec option encrypt and decrypt
 func WithBlockCodec(newEncrypt, newDecrypt func(block cipher.Block, iv []byte) cipher.BlockMode) Option {
 	return func(bs *blockBlock) {
 		bs.newEncrypt = newEncrypt
@@ -37,7 +38,7 @@ func WithBlockCodec(newEncrypt, newDecrypt func(block cipher.Block, iv []byte) c
 	}
 }
 
-// New new with newCipher and key, iv
+// NewBlockCrypt new with newCipher, key, iv and custom option
 // newCipher support follow or implement func(key []byte) (cipher.Block, error):
 // 		aes
 // 		cipher
