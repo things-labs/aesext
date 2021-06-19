@@ -25,11 +25,7 @@ func TestBlockModeCipher(t *testing.T) {
 	t.Run("aes", func(t *testing.T) {
 		plainText := []byte("helloworld,this is golang language. welcome")
 		for _, keySize := range aesKeySizes {
-			bc := BlockModeCipher{
-				cipher.NewCBCEncrypter,
-				cipher.NewCBCDecrypter,
-			}
-			blk, err := bc.New(newKey[:keySize], iv[:aes.BlockSize], aes.NewCipher)
+			blk, err := NewBlockCrypt(newKey[:keySize], iv[:aes.BlockSize], aes.NewCipher)
 			require.NoError(t, err)
 
 			assert.Equal(t, aes.BlockSize, blk.BlockSize())
@@ -49,19 +45,11 @@ func TestBlockModeCipher(t *testing.T) {
 	})
 
 	t.Run("invalid iv length", func(t *testing.T) {
-		bc := BlockModeCipher{
-			cipher.NewCBCEncrypter,
-			cipher.NewCBCDecrypter,
-		}
-		_, err := bc.New(newKey[:16], []byte{}, aes.NewCipher)
+		_, err := NewBlockCrypt(newKey[:16], []byte{}, aes.NewCipher)
 		require.Error(t, err)
 	})
 	t.Run("invalid cipher", func(t *testing.T) {
-		bc := BlockModeCipher{
-			cipher.NewCBCEncrypter,
-			cipher.NewCBCDecrypter,
-		}
-		_, err := bc.New(newKey[:16], iv[:aes.BlockSize], mockErrorNewCipher)
+		_, err := NewBlockCrypt(newKey[:16], iv[:aes.BlockSize], mockErrorNewCipher)
 		require.Error(t, err)
 	})
 }

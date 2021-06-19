@@ -27,12 +27,14 @@ type BlockCrypt interface {
 	Decrypt(cipherText []byte) ([]byte, error)
 }
 
-// BlockModeCipher block mode cipher
-// support:
-//      cbc: cipher.NewCBCEncrypter, cipher.NewCBCDecrypter
-type BlockModeCipher struct {
-	NewEncrypt func(block cipher.Block, iv []byte) cipher.BlockMode
-	NewDecrypt func(block cipher.Block, iv []byte) cipher.BlockMode
+// Option option
+type Option func(bs *blockBlock)
+
+func WithBlockCodec(newEncrypt, newDecrypt func(block cipher.Block, iv []byte) cipher.BlockMode) Option {
+	return func(bs *blockBlock) {
+		bs.newEncrypt = newEncrypt
+		bs.newDecrypt = newDecrypt
+	}
 }
 
 // New new with newCipher and key, iv
@@ -45,7 +47,9 @@ type BlockModeCipher struct {
 // 		twofish
 // 		xtea
 // 		tea
-func (sf *BlockModeCipher) New(key, iv []byte, newCipher func(key []byte) (cipher.Block, error)) (BlockCrypt, error) {
+// support:
+//      cbc(default): cipher.NewCBCEncrypter, cipher.NewCBCDecrypter
+func NewBlockCrypt(key, iv []byte, newCipher func(key []byte) (cipher.Block, error), opts ...Option) (BlockCrypt, error) {
 	block, err := newCipher(key)
 	if err != nil {
 		return nil, err
@@ -53,11 +57,15 @@ func (sf *BlockModeCipher) New(key, iv []byte, newCipher func(key []byte) (ciphe
 	if len(iv) != block.BlockSize() {
 		return nil, ErrInvalidIvSize
 	}
+
 	bb := &blockBlock{
 		block:      block,
 		iv:         iv,
-		newEncrypt: sf.NewEncrypt,
-		newDecrypt: sf.NewDecrypt,
+		newEncrypt: cipher.NewCBCEncrypter,
+		newDecrypt: cipher.NewCBCDecrypter,
+	}
+	for _, opt := range opts {
+		opt(bb)
 	}
 	return bb, nil
 }

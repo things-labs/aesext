@@ -7,16 +7,14 @@ package aesext
 
 import (
 	"crypto/aes"
-	"crypto/cipher"
 	"crypto/md5"
 )
 
 // New 创建一个新的加密
-func New(key, salt []byte) (BlockCrypt, error) {
-	bmc := BlockModeCipher{
-		NewEncrypt: cipher.NewCBCEncrypter,
-		NewDecrypt: cipher.NewCBCDecrypter,
-	}
+// aes-128加密
+// support:
+//      cbc(default): cipher.NewCBCEncrypter, cipher.NewCBCDecrypter
+func New(key, salt []byte, opts ...Option) (BlockCrypt, error) {
 	newKey, iv := md5.Sum(key), md5.Sum(append(salt, key...))
-	return bmc.New(newKey[:], iv[:], aes.NewCipher)
+	return NewBlockCrypt(newKey[:], iv[:], aes.NewCipher, opts...)
 }
