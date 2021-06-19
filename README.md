@@ -13,3 +13,55 @@
 [![Tag](https://img.shields.io/github/v/tag/things-labs/aesext)](https://github.com/things-labs/aesext/tags)
 
 
+```bash
+    go get github.com/things-labs/aesext
+```
+
+## Import:
+
+```go
+    import "github.com/things-labs/aesext"
+```
+
+## Example
+
+[embedmd]:# (_example/main.go go)
+```go
+package main
+
+import (
+	"bytes"
+
+	"github.com/things-labs/aesext"
+)
+
+func main() {
+	key, salt := []byte("iamakey"), []byte("iamasalt")
+
+	bc, err := aesext.New(key, salt)
+	if err != nil {
+		panic(err)
+	}
+	want := []byte("iamaplaintext")
+
+	cipherText, err := bc.Encrypt(want)
+	if err != nil {
+		panic(err)
+	}
+	got, err := bc.Decrypt(cipherText)
+	if err != nil {
+		panic(err)
+	}
+
+	ok := bytes.Equal(got, want)
+	if !ok {
+		panic("invalid encrypt and decrypt")
+	}
+}
+```
+
+
+
+## License
+
+This project is under MIT License. See the [LICENSE](LICENSE) file for the full license text.
